@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dhee.fanmaisystem.dao.OrderDao">
+    <resultMap id="orderResultMap" type="com.dhee.fanmaisystem.entity.Order">
+        <id property="oId" column="o_id"/>
+        <result property="oNumber" column="o_number"/>
+        <result property="oDate" column="o_date"/>
+        <result property="sId" column="s_id"/>
+        <result property="sName" column="s_name"/>
+        <result property="pId" column="p_id"/>
+        <result property="pName" column="p_name"/>
+        <result property="quantity" column="quantity"/>
+        <result property="unitPrice" column="unit_price"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="eId" column="e_id"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+    
+    <!-- 插入订单 -->
+    <insert id="insert" parameterType="Order" useGeneratedKeys="true" keyProperty="oId">
+        INSERT INTO `order` (o_number, o_date, s_id, p_id, quantity, unit_price, total_amount, e_id, status, remark)
+        VALUES (#{oNumber}, #{oDate}, #{sId}, #{pId}, #{quantity}, #{unitPrice}, #{totalAmount}, #{eId}, #{status}, #{remark})
+    </insert>
+    
+    <!-- 根据ID查询订单 -->
+    <select id="findById" parameterType="int" resultMap="orderResultMap">
+        SELECT o.o_id, o.o_number, o.o_date, o.s_id, s.s_name, o.p_id, p.p_name,
+               o.quantity, o.unit_price, o.total_amount, o.e_id, o.status, o.remark
+        FROM `order` o
+        LEFT JOIN supplier s ON o.s_id = s.s_id
+        LEFT JOIN product p ON o.p_id = p.p_id
+        WHERE o.o_id = #{value}
+    </select>
+    
+    <!-- 查询所有订单（支持条件查询） -->
+    <select id="findAll" parameterType="Order" resultMap="orderResultMap">
+        SELECT o.o_id, o.o_number, o.o_date, o.s_id, s.s_name, o.p_id, p.p_name,
+               o.quantity, o.unit_price, o.total_amount, o.e_id, o.status, o.remark
+        FROM `order` o
+        LEFT JOIN supplier s ON o.s_id = s.s_id
+        LEFT JOIN product p ON o.p_id = p.p_id
+        <where>
+            <if test="oNumber != null and oNumber != ''">
+                AND o.o_number LIKE CONCAT('%', #{oNumber}, '%')
+            </if>
+            <if test="sId != null">
+                AND o.s_id = #{sId}
+            </if>
+            <if test="pId != null">
+                AND o.p_id = #{pId}
+            </if>
+            <if test="status != null and status != ''">
+                AND o.status = #{status}
+            </if>
+            <if test="oDate != null and oDate != ''">
+                AND o.o_date = #{oDate}
+            </if>
+        </where>
+        ORDER BY o.o_date DESC, o.o_id DESC
+    </select>
+    
+    <!-- 更新订单 -->
+    <update id="update" parameterType="Order">
+        UPDATE `order`
+        <set>
+            <if test="oNumber != null">o_number = #{oNumber},</if>
+            <if test="oDate != null">o_date = #{oDate},</if>
+            <if test="sId != null">s_id = #{sId},</if>
+            <if test="pId != null">p_id = #{pId},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="unitPrice != null">unit_price = #{unitPrice},</if>
+            <if test="totalAmount != null">total_amount = #{totalAmount},</if>
+            <if test="eId != null">e_id = #{eId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        WHERE o_id = #{oId}
+    </update>
+    
+    <!-- 删除订单 -->
+    <delete id="delete" parameterType="int">
+        DELETE FROM `order` WHERE o_id = #{value}
+    </delete>
+</mapper>
+

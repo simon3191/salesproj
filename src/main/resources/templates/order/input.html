@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>订单输入</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: inline-block;
+            width: 120px;
+            text-align: right;
+            margin-right: 10px;
+        }
+        input, select, textarea {
+            width: 300px;
+            padding: 5px;
+        }
+        textarea {
+            height: 60px;
+        }
+        button {
+            padding: 8px 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        .msg {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <h1>订单输入</h1>
+    
+    <div th:if="${msg}" th:class="${success ? 'msg success' : 'msg error'}" th:text="${msg}"></div>
+    
+    <form action="/order/save" method="post">
+        <div class="form-group">
+            <label>订单编号：</label>
+            <input type="text" name="oNumber" placeholder="系统自动生成" readonly/>
+        </div>
+        
+        <div class="form-group">
+            <label>订单日期：</label>
+            <input type="date" name="oDate" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}"/>
+        </div>
+        
+        <div class="form-group">
+            <label>供货商：<span style="color: red;">*</span></label>
+            <select name="sId" required>
+                <option value="">请选择供货商</option>
+                <option th:each="supplier : ${supplierList}" 
+                        th:value="${supplier.sId}" 
+                        th:text="${supplier.sName}"></option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>商品：<span style="color: red;">*</span></label>
+            <select name="pId" required>
+                <option value="">请选择商品</option>
+                <option th:each="product : ${productList}" 
+                        th:value="${product.pId}" 
+                        th:text="${product.pName + ' (¥' + product.pPrice + ')'}"></option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>数量：<span style="color: red;">*</span></label>
+            <input type="number" name="quantity" min="1" required onchange="calculateTotal()"/>
+        </div>
+        
+        <div class="form-group">
+            <label>单价：<span style="color: red;">*</span></label>
+            <input type="number" name="unitPrice" step="0.01" min="0" required onchange="calculateTotal()"/>
+        </div>
+        
+        <div class="form-group">
+            <label>总金额：</label>
+            <input type="number" name="totalAmount" step="0.01" readonly/>
+        </div>
+        
+        <div class="form-group">
+            <label>订单状态：</label>
+            <select name="status">
+                <option value="待处理" selected>待处理</option>
+                <option value="已确认">已确认</option>
+                <option value="已完成">已完成</option>
+                <option value="已取消">已取消</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>备注：</label>
+            <textarea name="remark" placeholder="请输入备注信息"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <button type="submit">保存订单</button>
+            <button type="reset">重置</button>
+            <a href="/order/list"><button type="button">查看订单列表</button></a>
+        </div>
+    </form>
+    
+    <script>
+        function calculateTotal() {
+            var quantity = document.querySelector('input[name="quantity"]').value;
+            var unitPrice = document.querySelector('input[name="unitPrice"]').value;
+            if (quantity && unitPrice) {
+                var total = parseFloat(quantity) * parseFloat(unitPrice);
+                document.querySelector('input[name="totalAmount"]').value = total.toFixed(2);
+            }
+        }
+    </script>
+</body>
+</html>
+

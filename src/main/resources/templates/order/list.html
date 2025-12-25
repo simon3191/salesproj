@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>订单列表</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .search-form {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .search-form input, .search-form select {
+            margin-right: 10px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>订单列表</h1>
+    
+    <div class="search-form">
+        <form action="/order/list" method="post">
+            <label>订单编号：</label>
+            <input type="text" name="oNumber" th:value="${order != null ? order.oNumber : ''}"/>
+            
+            <label>订单日期：</label>
+            <input type="date" name="oDate" th:value="${order != null ? order.oDate : ''}"/>
+            
+            <label>订单状态：</label>
+            <select name="status">
+                <option value="">全部</option>
+                <option value="待处理" th:selected="${order != null && order.status == '待处理'}">待处理</option>
+                <option value="已确认" th:selected="${order != null && order.status == '已确认'}">已确认</option>
+                <option value="已完成" th:selected="${order != null && order.status == '已完成'}">已完成</option>
+                <option value="已取消" th:selected="${order != null && order.status == '已取消'}">已取消</option>
+            </select>
+            
+            <button type="submit">搜索</button>
+            <a href="/order/input"><button type="button">新增订单</button></a>
+        </form>
+    </div>
+    
+    <table>
+        <tr>
+            <th>订单编号</th>
+            <th>订单日期</th>
+            <th>供货商</th>
+            <th>商品</th>
+            <th>数量</th>
+            <th>单价</th>
+            <th>总金额</th>
+            <th>状态</th>
+            <th>备注</th>
+        </tr>
+        <tr th:each="order : ${orderList}">
+            <td th:text="${order.oNumber}"></td>
+            <td th:text="${order.oDate}"></td>
+            <td th:text="${order.sName}"></td>
+            <td th:text="${order.pName}"></td>
+            <td th:text="${order.quantity}"></td>
+            <td th:text="${'¥' + order.unitPrice}"></td>
+            <td th:text="${'¥' + order.totalAmount}"></td>
+            <td th:text="${order.status}"></td>
+            <td th:text="${order.remark}"></td>
+        </tr>
+        <tr th:if="${orderList == null || #lists.isEmpty(orderList)}">
+            <td colspan="9" style="text-align: center;">暂无数据</td>
+        </tr>
+    </table>
+</body>
+</html>
+

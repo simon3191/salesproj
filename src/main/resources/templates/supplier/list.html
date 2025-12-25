@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>供货商信息维护</title>
+</head>
+<body>
+    <h1>供货商信息查询</h1>
+
+    <form action="/supplierlist" method="post">
+        <p>
+            供货商名称： <input name="sName" th:value="${supplier != null ? supplier.sName : ''}"/>
+            <button>搜索</button>
+        </p>
+    </form>
+    <table border="1" width="80%">
+        <tr>
+            <th>编号</th>
+            <th>供货商名称</th>
+            <th>供货商电话</th>
+            <th>供货商地址</th>
+        </tr>
+        <tr th:each="supplier:${supplierList}">
+            <td th:text="${supplier.sId}"></td>
+            <td th:text="${supplier.sName}"></td>
+            <td th:text="${supplier.sPhone}"></td>
+            <td th:text="${supplier.sAddress}"></td>
+        </tr>
+    </table>
+</body>
+</html>
+

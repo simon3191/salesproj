@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商品信息维护</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .search-form {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .search-form input, .search-form select {
+            margin-right: 10px;
+            padding: 5px;
+        }
+        .action-btn {
+            padding: 5px 10px;
+            margin-right: 5px;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            background-color: #f5f5f5;
+            color: #333;
+            border-radius: 3px;
+        }
+        .action-btn:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <h1>商品信息维护</h1>
+    
+    <div class="search-form">
+        <form action="/product/list" method="post">
+            <label>商品名称：</label>
+            <input type="text" name="pName" th:value="${product != null ? product.pName : ''}"/>
+            
+            <label>商品编码：</label>
+            <input type="text" name="pCode" th:value="${product != null ? product.pCode : ''}"/>
+            
+            <label>商品类别：</label>
+            <input type="text" name="pCategory" th:value="${product != null ? product.pCategory : ''}"/>
+            
+            <label>商品状态：</label>
+            <select name="pStatus">
+                <option value="">全部</option>
+                <option value="在售" th:selected="${product != null && product.pStatus == '在售'}">在售</option>
+                <option value="停售" th:selected="${product != null && product.pStatus == '停售'}">停售</option>
+            </select>
+            
+            <button type="submit">搜索</button>
+            <a href="/product/toEdit"><button type="button">新增商品</button></a>
+        </form>
+    </div>
+    
+    <table>
+        <tr>
+            <th>商品ID</th>
+            <th>商品名称</th>
+            <th>商品编码</th>
+            <th>类别</th>
+            <th>单位</th>
+            <th>单价</th>
+            <th>库存</th>
+            <th>供货商</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        <tr th:each="product : ${productList}">
+            <td th:text="${product.pId}"></td>
+            <td th:text="${product.pName}"></td>
+            <td th:text="${product.pCode}"></td>
+            <td th:text="${product.pCategory}"></td>
+            <td th:text="${product.pUnit}"></td>
+            <td th:text="${'¥' + product.pPrice}"></td>
+            <td th:text="${product.stock}"></td>
+            <td th:text="${product.sName}"></td>
+            <td th:text="${product.pStatus}"></td>
+            <td>
+                <a th:href="@{/product/toEdit(pId=${product.pId})}" class="action-btn">编辑</a>
+                <a th:href="@{/product/delete(pId=${product.pId})}" 
+                   class="action-btn" 
+                   onclick="return confirm('确定要删除该商品吗？')">删除</a>
+            </td>
+        </tr>
+        <tr th:if="${productList == null || #lists.isEmpty(productList)}">
+            <td colspan="10" style="text-align: center;">暂无数据</td>
+        </tr>
+    </table>
+</body>
+</html>
+

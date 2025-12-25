@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dhee.fanmaisystem.dao.DepartmentDao">
+    <resultMap id="departmentResultMap" type="com.dhee.fanmaisystem.entity.Department">
+        <id property="dId" column="d_id"/>
+        <result property="dName" column="d_name"/>
+        <result property="dPermission" column="d_permission"/>
+    </resultMap>
+    
+    <select id="findAll" resultMap="departmentResultMap">
+        SELECT d_id, d_name, d_permission 
+        FROM department
+    </select>
+</mapper>
+

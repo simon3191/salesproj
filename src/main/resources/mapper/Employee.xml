@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dhee.fanmaisystem.dao.EmployeeDao">
+    <resultMap id="employeeResultMap" type="com.dhee.fanmaisystem.entity.Employee">
+        <result property="eId" column="e_id"/>
+        <result property="eName" column="e_name"/>
+        <result property="ePassword" column="e_password"/>
+        <result property="dId" column="d_id"/>
+    </resultMap>
+    
+    <select id="findById" parameterType="int" resultMap="employeeResultMap">
+        SELECT e_id, e_name, e_password, d_id 
+        FROM employee 
+        WHERE e_id = #{value}
+    </select>
+</mapper>
+

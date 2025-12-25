@@ -1,0 +1,14 @@
+.title {
+    color: aquamarine;
+}
+
+.menu {
+    width: 20%;
+    float: left;
+}
+
+.section {
+    width: 66%;
+    float: left;
+}
+

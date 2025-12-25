@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dhee.fanmaisystem.dao.SupplierDao">
+    <resultMap id="supplierResultMap" type="com.dhee.fanmaisystem.entity.Supplier">
+       <result property="sId" column="s_id"/>
+        <result property="sName" column="s_name"/>
+        <result property="sAddress" column="s_address"/>
+        <result property="sPostalCode" column="s_postal_code"/>
+        <result property="sPhone" column="s_phone"/>
+        <result property="sFax" column="s_fax"/>
+        <result property="sRDate" column="s_rdate"/>
+        <result property="sEmployee" column="s_employee"/>
+        <result property="outstandingPayment" column="outstanding_payment"/>
+    </resultMap>
+    
+    <select id="find" parameterType="com.dhee.fanmaisystem.entity.Supplier" resultMap="supplierResultMap">
+        SELECT s_id, s_fax, s_name, s_phone, s_r_date, s_address, s_employee, s_postal_code, outstanding_payment
+        FROM supplier
+        <where>
+            <if test="sName != null and sName != ''">
+                AND s_name LIKE CONCAT('%', #{sName}, '%')
+            </if>
+        </where>
+    </select>
+</mapper>
+

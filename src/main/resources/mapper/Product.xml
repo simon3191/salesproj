@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dhee.fanmaisystem.dao.ProductDao">
+    <resultMap id="productResultMap" type="com.dhee.fanmaisystem.entity.Product">
+        <id property="pId" column="p_id"/>
+        <result property="pName" column="p_name"/>
+        <result property="pCode" column="p_code"/>
+        <result property="pCategory" column="p_category"/>
+        <result property="pUnit" column="p_unit"/>
+        <result property="pPrice" column="p_price"/>
+        <result property="stock" column="stock"/>
+        <result property="sId" column="s_id"/>
+        <result property="sName" column="s_name"/>
+        <result property="pDescription" column="p_description"/>
+        <result property="pStatus" column="p_status"/>
+    </resultMap>
+    
+    <!-- 插入商品 -->
+    <insert id="insert" parameterType="Product" useGeneratedKeys="true" keyProperty="pId">
+        INSERT INTO product (p_name, p_code, p_category, p_unit, p_price, stock, s_id, p_description, p_status)
+        VALUES (#{pName}, #{pCode}, #{pCategory}, #{pUnit}, #{pPrice}, #{stock}, #{sId}, #{pDescription}, #{pStatus})
+    </insert>
+    
+    <!-- 根据ID查询商品 -->
+    <select id="findById" parameterType="int" resultMap="productResultMap">
+        SELECT p.p_id, p.p_name, p.p_code, p.p_category, p.p_unit, p.p_price, p.stock,
+               p.s_id, s.s_name, p.p_description, p.p_status
+        FROM product p
+        LEFT JOIN supplier s ON p.s_id = s.s_id
+        WHERE p.p_id = #{value}
+    </select>
+    
+    <!-- 查询所有商品（支持条件查询） -->
+    <select id="findAll" parameterType="Product" resultMap="productResultMap">
+        SELECT p.p_id, p.p_name, p.p_code, p.p_category, p.p_unit, p.p_price, p.stock,
+               p.s_id, s.s_name, p.p_description, p.p_status
+        FROM product p
+        LEFT JOIN supplier s ON p.s_id = s.s_id
+        <where>
+            <if test="pName != null and pName != ''">
+                AND p.p_name LIKE CONCAT('%', #{pName}, '%')
+            </if>
+            <if test="pCode != null and pCode != ''">
+                AND p.p_code LIKE CONCAT('%', #{pCode}, '%')
+            </if>
+            <if test="pCategory != null and pCategory != ''">
+                AND p.p_category = #{pCategory}
+            </if>
+            <if test="sId != null">
+                AND p.s_id = #{sId}
+            </if>
+            <if test="pStatus != null and pStatus != ''">
+                AND p.p_status = #{pStatus}
+            </if>
+        </where>
+        ORDER BY p.p_id DESC
+    </select>
+    
+    <!-- 更新商品 -->
+    <update id="update" parameterType="Product">
+        UPDATE product
+        <set>
+            <if test="pName != null">p_name = #{pName},</if>
+            <if test="pCode != null">p_code = #{pCode},</if>
+            <if test="pCategory != null">p_category = #{pCategory},</if>
+            <if test="pUnit != null">p_unit = #{pUnit},</if>
+            <if test="pPrice != null">p_price = #{pPrice},</if>
+            <if test="stock != null">stock = #{stock},</if>
+            <if test="sId != null">s_id = #{sId},</if>
+            <if test="pDescription != null">p_description = #{pDescription},</if>
+            <if test="pStatus != null">p_status = #{pStatus},</if>
+        </set>
+        WHERE p_id = #{pId}
+    </update>
+    
+    <!-- 删除商品 -->
+    <delete id="delete" parameterType="int">
+        DELETE FROM product WHERE p_id = #{value}
+    </delete>
+</mapper>
+

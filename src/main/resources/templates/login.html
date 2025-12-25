@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>华信贩卖系统</title>
+</head>
+<body>
+    <h1>登录</h1>
+    <form action="/login" method="post">
+        <p>部门：
+            <select name="dId">
+                <option value="">请选择部门</option>
+                <th:block th:each="dept:${deptList}">
+                    <option th:value="${dept.dId}">[[${dept.dName}]]</option>
+                </th:block>
+            </select>
+        </p>
+        <p>员工编号：<input name="eId" /></p>
+        <p>密码：<input type="password" name="ePassword" /></p>
+        <p>
+            <button>登录</button>
+            <button type="reset">取消</button>
+        </p>
+        <p th:text="${msg}" style="color: red;"></p>
+    </form>
+</body>
+</html>
+
