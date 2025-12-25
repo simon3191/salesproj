@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>付款请求列表</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>付款请求列表</h1>
+    <div style="margin-bottom: 20px;">
+        <a href="/paymentrequest/toAdd"><button>新增请求</button></a>
+    </div>
+    <table>
+        <tr>
+            <th>请求编号</th><th>请求日期</th><th>应收款编号</th><th>顾客</th><th>请求金额</th><th>状态</th><th>操作</th>
+        </tr>
+        <tr th:each="req : ${requestList}">
+            <td th:text="${req.prNumber}"></td>
+            <td th:text="${req.prDate}"></td>
+            <td th:text="${req.rNumber}"></td>
+            <td th:text="${req.cName}"></td>
+            <td th:text="${'¥' + req.requestAmount}"></td>
+            <td th:text="${req.requestStatus}"></td>
+            <td>
+                <a th:href="@{/paymentrequest/send(prId=${req.prId})}" th:if="${req.requestStatus == '待处理'}">发送</a>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+

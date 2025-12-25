@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhee.fanmaisystem.dao.PaymentReceivedDao">
+    <resultMap id="paymentReceivedResultMap" type="PaymentReceived">
+        <id property="prId" column="pr_id"/>
+        <result property="prNumber" column="pr_number"/>
+        <result property="prDate" column="pr_date"/>
+        <result property="rId" column="r_id"/>
+        <result property="rNumber" column="r_number"/>
+        <result property="cId" column="c_id"/>
+        <result property="cName" column="c_name"/>
+        <result property="receivedAmount" column="received_amount"/>
+        <result property="paymentMethod" column="payment_method"/>
+        <result property="bankName" column="bank_name"/>
+        <result property="accountNumber" column="account_number"/>
+        <result property="receiptNumber" column="receipt_number"/>
+        <result property="remark" column="remark"/>
+        <result property="eId" column="e_id"/>
+    </resultMap>
+    
+    <insert id="insert" parameterType="PaymentReceived" useGeneratedKeys="true" keyProperty="prId">
+        INSERT INTO payment_received (pr_number, pr_date, r_id, c_id, received_amount, payment_method, bank_name, account_number, receipt_number, remark, e_id)
+        VALUES (#{prNumber}, #{prDate}, #{rId}, #{cId}, #{receivedAmount}, #{paymentMethod}, #{bankName}, #{accountNumber}, #{receiptNumber}, #{remark}, #{eId})
+    </insert>
+    
+    <select id="findById" parameterType="int" resultMap="paymentReceivedResultMap">
+        SELECT pr.*, r.r_number, c.c_name
+        FROM payment_received pr
+        LEFT JOIN receivable r ON pr.r_id = r.r_id
+        LEFT JOIN customer c ON pr.c_id = c.c_id
+        WHERE pr.pr_id = #{value}
+    </select>
+    
+    <select id="findAll" parameterType="PaymentReceived" resultMap="paymentReceivedResultMap">
+        SELECT pr.*, r.r_number, c.c_name
+        FROM payment_received pr
+        LEFT JOIN receivable r ON pr.r_id = r.r_id
+        LEFT JOIN customer c ON pr.c_id = c.c_id
+        <where>
+            <if test="prNumber != null and prNumber != ''">
+                AND pr.pr_number LIKE CONCAT('%', #{prNumber}, '%')
+            </if>
+            <if test="rId != null">
+                AND pr.r_id = #{rId}
+            </if>
+            <if test="cId != null">
+                AND pr.c_id = #{cId}
+            </if>
+        </where>
+        ORDER BY pr.pr_date DESC, pr.pr_id DESC
+    </select>
+    
+    <update id="update" parameterType="PaymentReceived">
+        UPDATE payment_received
+        <set>
+            <if test="prNumber != null">pr_number = #{prNumber},</if>
+            <if test="prDate != null">pr_date = #{prDate},</if>
+            <if test="rId != null">r_id = #{rId},</if>
+            <if test="cId != null">c_id = #{cId},</if>
+            <if test="receivedAmount != null">received_amount = #{receivedAmount},</if>
+            <if test="paymentMethod != null">payment_method = #{paymentMethod},</if>
+            <if test="bankName != null">bank_name = #{bankName},</if>
+            <if test="accountNumber != null">account_number = #{accountNumber},</if>
+            <if test="receiptNumber != null">receipt_number = #{receiptNumber},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="eId != null">e_id = #{eId},</if>
+        </set>
+        WHERE pr_id = #{prId}
+    </update>
+    
+    <delete id="delete" parameterType="int">
+        DELETE FROM payment_received WHERE pr_id = #{value}
+    </delete>
+</mapper>
+

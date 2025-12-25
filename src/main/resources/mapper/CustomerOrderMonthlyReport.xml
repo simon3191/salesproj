@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhee.fanmaisystem.dao.CustomerOrderMonthlyReportDao">
+    <resultMap id="reportResultMap" type="CustomerOrderMonthlyReport">
+        <result property="reportMonth" column="report_month"/>
+        <result property="cId" column="c_id"/>
+        <result property="cName" column="c_name"/>
+        <result property="cCode" column="c_code"/>
+        <result property="cAddress" column="c_address"/>
+        <result property="orderCount" column="order_count"/>
+        <result property="totalQuantity" column="total_quantity"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="firstOrderDate" column="first_order_date"/>
+        <result property="lastOrderDate" column="last_order_date"/>
+    </resultMap>
+    
+    <select id="generateReport" parameterType="string" resultMap="reportResultMap">
+        SELECT 
+            #{month} as report_month,
+            c.c_id,
+            c.c_name,
+            c.c_code,
+            c.c_address,
+            COUNT(DISTINCT so.so_id) as order_count,
+            COALESCE(SUM(so.quantity), 0) as total_quantity,
+            COALESCE(SUM(so.total_amount), 0) as total_amount,
+            MIN(so.so_date) as first_order_date,
+            MAX(so.so_date) as last_order_date
+        FROM customer c
+        LEFT JOIN sales_order so ON c.c_id = so.c_id 
+            AND DATE_FORMAT(so.so_date, '%Y-%m') = #{month}
+        WHERE c.c_status = '有效'
+        GROUP BY c.c_id, c.c_name, c.c_code, c.c_address
+        HAVING order_count > 0
+        ORDER BY total_amount DESC, c.c_id
+    </select>
+</mapper>
+

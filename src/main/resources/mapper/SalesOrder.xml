@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhee.fanmaisystem.dao.SalesOrderDao">
+    <resultMap id="salesOrderResultMap" type="SalesOrder">
+        <id property="soId" column="so_id"/>
+        <result property="soNumber" column="so_number"/>
+        <result property="soDate" column="so_date"/>
+        <result property="cId" column="c_id"/>
+        <result property="cName" column="c_name"/>
+        <result property="pId" column="p_id"/>
+        <result property="pName" column="p_name"/>
+        <result property="quantity" column="quantity"/>
+        <result property="unitPrice" column="unit_price"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="soStatus" column="so_status"/>
+        <result property="eId" column="e_id"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+    
+    <insert id="insert" parameterType="SalesOrder" useGeneratedKeys="true" keyProperty="soId">
+        INSERT INTO sales_order (so_number, so_date, c_id, p_id, quantity, unit_price, total_amount, so_status, e_id, remark)
+        VALUES (#{soNumber}, #{soDate}, #{cId}, #{pId}, #{quantity}, #{unitPrice}, #{totalAmount}, #{soStatus}, #{eId}, #{remark})
+    </insert>
+    
+    <select id="findById" parameterType="int" resultMap="salesOrderResultMap">
+        SELECT so.*, c.c_name, p.p_name
+        FROM sales_order so
+        LEFT JOIN customer c ON so.c_id = c.c_id
+        LEFT JOIN product p ON so.p_id = p.p_id
+        WHERE so.so_id = #{value}
+    </select>
+    
+    <select id="findAll" parameterType="SalesOrder" resultMap="salesOrderResultMap">
+        SELECT so.*, c.c_name, p.p_name
+        FROM sales_order so
+        LEFT JOIN customer c ON so.c_id = c.c_id
+        LEFT JOIN product p ON so.p_id = p.p_id
+        <where>
+            <if test="soNumber != null and soNumber != ''">
+                AND so.so_number LIKE CONCAT('%', #{soNumber}, '%')
+            </if>
+            <if test="cId != null">
+                AND so.c_id = #{cId}
+            </if>
+            <if test="pId != null">
+                AND so.p_id = #{pId}
+            </if>
+            <if test="soStatus != null and soStatus != ''">
+                AND so.so_status = #{soStatus}
+            </if>
+        </where>
+        ORDER BY so.so_date DESC, so.so_id DESC
+    </select>
+    
+    <select id="findByMonth" parameterType="string" resultMap="salesOrderResultMap">
+        SELECT so.*, c.c_name, p.p_name
+        FROM sales_order so
+        LEFT JOIN customer c ON so.c_id = c.c_id
+        LEFT JOIN product p ON so.p_id = p.p_id
+        WHERE DATE_FORMAT(so.so_date, '%Y-%m') = #{value}
+        ORDER BY so.so_date DESC, so.so_id DESC
+    </select>
+    
+    <update id="update" parameterType="SalesOrder">
+        UPDATE sales_order
+        <set>
+            <if test="soNumber != null">so_number = #{soNumber},</if>
+            <if test="soDate != null">so_date = #{soDate},</if>
+            <if test="cId != null">c_id = #{cId},</if>
+            <if test="pId != null">p_id = #{pId},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="unitPrice != null">unit_price = #{unitPrice},</if>
+            <if test="totalAmount != null">total_amount = #{totalAmount},</if>
+            <if test="soStatus != null">so_status = #{soStatus},</if>
+            <if test="eId != null">e_id = #{eId},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        WHERE so_id = #{soId}
+    </update>
+    
+    <delete id="delete" parameterType="int">
+        DELETE FROM sales_order WHERE so_id = #{value}
+    </delete>
+</mapper>
+

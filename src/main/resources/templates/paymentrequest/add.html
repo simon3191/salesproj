@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>请求付款</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: inline-block; width: 120px; text-align: right; margin-right: 10px; }
+        input, select, textarea { width: 300px; padding: 5px; }
+        textarea { height: 60px; }
+        button { padding: 8px 20px; margin-right: 10px; cursor: pointer; }
+        .msg { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>请求付款</h1>
+    <div th:if="${msg}" th:class="${success ? 'msg success' : 'msg error'}" th:text="${msg}"></div>
+    <form action="/paymentrequest/save" method="post">
+        <div class="form-group">
+            <label>请求编号：</label>
+            <input type="text" name="prNumber" placeholder="系统自动生成" readonly/>
+        </div>
+        <div class="form-group">
+            <label>应收款：<span style="color: red;">*</span></label>
+            <select name="rId" required onchange="loadReceivableInfo(this.value)">
+                <option value="">请选择应收款</option>
+                <option th:each="rec : ${receivableList}" th:value="${rec.rId}" 
+                        th:data-amount="${rec.balanceAmount}" th:data-customer="${rec.cId}"
+                        th:text="${rec.rNumber + ' (余额: ¥' + rec.balanceAmount + ')'}"></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>请求金额：<span style="color: red;">*</span></label>
+            <input type="number" name="requestAmount" step="0.01" min="0" required/>
+        </div>
+        <div class="form-group">
+            <label>备注：</label>
+            <textarea name="remark"></textarea>
+        </div>
+        <div class="form-group">
+            <button type="submit">保存</button>
+            <button type="reset">重置</button>
+            <a href="/paymentrequest/list"><button type="button">返回列表</button></a>
+        </div>
+    </form>
+    <script>
+        function loadReceivableInfo(rId) {
+            var select = event.target;
+            var option = select.options[select.selectedIndex];
+            if (option.value) {
+                document.querySelector('input[name="requestAmount"]').value = option.getAttribute('data-amount') || '';
+                document.querySelector('input[name="cId"]').value = option.getAttribute('data-customer') || '';
+            }
+        }
+    </script>
+</body>
+</html>
+

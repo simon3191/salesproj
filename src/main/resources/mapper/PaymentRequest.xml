@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhee.fanmaisystem.dao.PaymentRequestDao">
+    <resultMap id="paymentRequestResultMap" type="PaymentRequest">
+        <id property="prId" column="pr_id"/>
+        <result property="prNumber" column="pr_number"/>
+        <result property="prDate" column="pr_date"/>
+        <result property="rId" column="r_id"/>
+        <result property="rNumber" column="r_number"/>
+        <result property="cId" column="c_id"/>
+        <result property="cName" column="c_name"/>
+        <result property="requestAmount" column="request_amount"/>
+        <result property="requestStatus" column="request_status"/>
+        <result property="sendDate" column="send_date"/>
+        <result property="confirmDate" column="confirm_date"/>
+        <result property="remark" column="remark"/>
+        <result property="eId" column="e_id"/>
+    </resultMap>
+    
+    <insert id="insert" parameterType="PaymentRequest" useGeneratedKeys="true" keyProperty="prId">
+        INSERT INTO payment_request (pr_number, pr_date, r_id, c_id, request_amount, request_status, send_date, confirm_date, remark, e_id)
+        VALUES (#{prNumber}, #{prDate}, #{rId}, #{cId}, #{requestAmount}, #{requestStatus}, #{sendDate}, #{confirmDate}, #{remark}, #{eId})
+    </insert>
+    
+    <select id="findById" parameterType="int" resultMap="paymentRequestResultMap">
+        SELECT pr.*, r.r_number, c.c_name
+        FROM payment_request pr
+        LEFT JOIN receivable r ON pr.r_id = r.r_id
+        LEFT JOIN customer c ON pr.c_id = c.c_id
+        WHERE pr.pr_id = #{value}
+    </select>
+    
+    <select id="findAll" parameterType="PaymentRequest" resultMap="paymentRequestResultMap">
+        SELECT pr.*, r.r_number, c.c_name
+        FROM payment_request pr
+        LEFT JOIN receivable r ON pr.r_id = r.r_id
+        LEFT JOIN customer c ON pr.c_id = c.c_id
+        <where>
+            <if test="prNumber != null and prNumber != ''">
+                AND pr.pr_number LIKE CONCAT('%', #{prNumber}, '%')
+            </if>
+            <if test="rId != null">
+                AND pr.r_id = #{rId}
+            </if>
+            <if test="requestStatus != null and requestStatus != ''">
+                AND pr.request_status = #{requestStatus}
+            </if>
+        </where>
+        ORDER BY pr.pr_date DESC, pr.pr_id DESC
+    </select>
+    
+    <update id="update" parameterType="PaymentRequest">
+        UPDATE payment_request
+        <set>
+            <if test="prNumber != null">pr_number = #{prNumber},</if>
+            <if test="prDate != null">pr_date = #{prDate},</if>
+            <if test="rId != null">r_id = #{rId},</if>
+            <if test="cId != null">c_id = #{cId},</if>
+            <if test="requestAmount != null">request_amount = #{requestAmount},</if>
+            <if test="requestStatus != null">request_status = #{requestStatus},</if>
+            <if test="sendDate != null">send_date = #{sendDate},</if>
+            <if test="confirmDate != null">confirm_date = #{confirmDate},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="eId != null">e_id = #{eId},</if>
+        </set>
+        WHERE pr_id = #{prId}
+    </update>
+    
+    <delete id="delete" parameterType="int">
+        DELETE FROM payment_request WHERE pr_id = #{value}
+    </delete>
+</mapper>
+

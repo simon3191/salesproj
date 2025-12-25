@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>顾客订单月报</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .search-form {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .search-form input {
+            margin-right: 10px;
+            padding: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .text-left {
+            text-align: left;
+        }
+        button {
+            padding: 8px 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>顾客订单月报</h1>
+    
+    <div class="search-form">
+        <form action="/report/customer/monthly" method="get">
+            <label>打印月份：</label>
+            <input type="month" name="month" th:value="${reportMonth}" required/>
+            <button type="submit">查询</button>
+            <a th:href="@{/report/customer/monthly/preview(month=${reportMonth})}" target="_blank">
+                <button type="button">打印预览</button>
+            </a>
+        </form>
+    </div>
+    
+    <table>
+        <tr>
+            <th>顾客ID</th>
+            <th>顾客名称</th>
+            <th>顾客编码</th>
+            <th>地址</th>
+            <th>订单数量</th>
+            <th>总数量</th>
+            <th>总金额</th>
+            <th>首次订单日期</th>
+            <th>最后订单日期</th>
+        </tr>
+        <tr th:each="report : ${reportList}">
+            <td class="text-left" th:text="${report.cId}"></td>
+            <td class="text-left" th:text="${report.cName}"></td>
+            <td class="text-left" th:text="${report.cCode}"></td>
+            <td class="text-left" th:text="${report.cAddress}"></td>
+            <td class="text-left" th:text="${report.orderCount}"></td>
+            <td class="text-left" th:text="${report.totalQuantity}"></td>
+            <td class="text-left" th:text="${'¥' + #numbers.formatDecimal(report.totalAmount, 1, 2)}"></td>
+            <td class="text-left" th:text="${report.firstOrderDate}"></td>
+            <td class="text-left" th:text="${report.lastOrderDate}"></td>
+        </tr>
+        <tr th:if="${reportList == null || #lists.isEmpty(reportList)}">
+            <td colspan="9" style="text-align: center;">暂无数据</td>
+        </tr>
+    </table>
+</body>
+</html>
+

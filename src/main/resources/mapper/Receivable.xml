@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhee.fanmaisystem.dao.ReceivableDao">
+    <resultMap id="receivableResultMap" type="Receivable">
+        <id property="rId" column="r_id"/>
+        <result property="rNumber" column="r_number"/>
+        <result property="rDate" column="r_date"/>
+        <result property="cId" column="c_id"/>
+        <result property="cName" column="c_name"/>
+        <result property="oId" column="o_id"/>
+        <result property="oNumber" column="o_number"/>
+        <result property="rAmount" column="r_amount"/>
+        <result property="receivedAmount" column="received_amount"/>
+        <result property="balanceAmount" column="balance_amount"/>
+        <result property="rStatus" column="r_status"/>
+        <result property="dueDate" column="due_date"/>
+        <result property="remark" column="remark"/>
+        <result property="eId" column="e_id"/>
+    </resultMap>
+    
+    <insert id="insert" parameterType="Receivable" useGeneratedKeys="true" keyProperty="rId">
+        INSERT INTO receivable (r_number, r_date, c_id, o_id, r_amount, received_amount, balance_amount, r_status, due_date, remark, e_id)
+        VALUES (#{rNumber}, #{rDate}, #{cId}, #{oId}, #{rAmount}, #{receivedAmount}, #{balanceAmount}, #{rStatus}, #{dueDate}, #{remark}, #{eId})
+    </insert>
+    
+    <select id="findById" parameterType="int" resultMap="receivableResultMap">
+        SELECT r.*, c.c_name, o.o_number
+        FROM receivable r
+        LEFT JOIN customer c ON r.c_id = c.c_id
+        LEFT JOIN `order` o ON r.o_id = o.o_id
+        WHERE r.r_id = #{value}
+    </select>
+    
+    <select id="findAll" parameterType="Receivable" resultMap="receivableResultMap">
+        SELECT r.*, c.c_name, o.o_number
+        FROM receivable r
+        LEFT JOIN customer c ON r.c_id = c.c_id
+        LEFT JOIN `order` o ON r.o_id = o.o_id
+        <where>
+            <if test="rNumber != null and rNumber != ''">
+                AND r.r_number LIKE CONCAT('%', #{rNumber}, '%')
+            </if>
+            <if test="cId != null">
+                AND r.c_id = #{cId}
+            </if>
+            <if test="rStatus != null and rStatus != ''">
+                AND r.r_status = #{rStatus}
+            </if>
+        </where>
+        ORDER BY r.r_date DESC, r.r_id DESC
+    </select>
+    
+    <update id="update" parameterType="Receivable">
+        UPDATE receivable
+        <set>
+            <if test="rNumber != null">r_number = #{rNumber},</if>
+            <if test="rDate != null">r_date = #{rDate},</if>
+            <if test="cId != null">c_id = #{cId},</if>
+            <if test="oId != null">o_id = #{oId},</if>
+            <if test="rAmount != null">r_amount = #{rAmount},</if>
+            <if test="receivedAmount != null">received_amount = #{receivedAmount},</if>
+            <if test="balanceAmount != null">balance_amount = #{balanceAmount},</if>
+            <if test="rStatus != null">r_status = #{rStatus},</if>
+            <if test="dueDate != null">due_date = #{dueDate},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="eId != null">e_id = #{eId},</if>
+        </set>
+        WHERE r_id = #{rId}
+    </update>
+    
+    <update id="updateReceivedAmount">
+        UPDATE receivable
+        SET received_amount = #{receivedAmount},
+            balance_amount = r_amount - #{receivedAmount}
+        WHERE r_id = #{rId}
+    </update>
+    
+    <delete id="delete" parameterType="int">
+        DELETE FROM receivable WHERE r_id = #{value}
+    </delete>
+</mapper>
+

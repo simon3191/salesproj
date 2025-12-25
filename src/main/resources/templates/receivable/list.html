@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>应收款列表</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .search-form { margin-bottom: 20px; padding: 15px; background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <h1>应收款列表</h1>
+    <div class="search-form">
+        <form action="/receivable/list" method="post">
+            <label>应收款编号：</label>
+            <input type="text" name="rNumber" th:value="${receivable != null ? receivable.rNumber : ''}"/>
+            <label>状态：</label>
+            <select name="rStatus">
+                <option value="">全部</option>
+                <option value="未收款">未收款</option>
+                <option value="部分收款">部分收款</option>
+                <option value="已收款">已收款</option>
+            </select>
+            <button type="submit">搜索</button>
+            <a href="/receivable/toAdd"><button type="button">新增应收款</button></a>
+        </form>
+    </div>
+    <table>
+        <tr>
+            <th>应收款编号</th><th>登记日期</th><th>顾客</th><th>应收金额</th><th>已收金额</th><th>余额</th><th>状态</th><th>到期日期</th>
+        </tr>
+        <tr th:each="rec : ${receivableList}">
+            <td th:text="${rec.rNumber}"></td>
+            <td th:text="${rec.rDate}"></td>
+            <td th:text="${rec.cName}"></td>
+            <td th:text="${'¥' + rec.rAmount}"></td>
+            <td th:text="${'¥' + rec.receivedAmount}"></td>
+            <td th:text="${'¥' + rec.balanceAmount}"></td>
+            <td th:text="${rec.rStatus}"></td>
+            <td th:text="${rec.dueDate}"></td>
+        </tr>
+    </table>
+</body>
+</html>
+

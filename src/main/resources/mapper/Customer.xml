@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhee.fanmaisystem.dao.CustomerDao">
+    <resultMap id="customerResultMap" type="Customer">
+        <id property="cId" column="c_id"/>
+        <result property="cName" column="c_name"/>
+        <result property="cCode" column="c_code"/>
+        <result property="cAddress" column="c_address"/>
+        <result property="cPostalCode" column="c_postal_code"/>
+        <result property="cPhone" column="c_phone"/>
+        <result property="cFax" column="c_fax"/>
+        <result property="cContact" column="c_contact"/>
+        <result property="cEmail" column="c_email"/>
+        <result property="cStatus" column="c_status"/>
+    </resultMap>
+    
+    <insert id="insert" parameterType="Customer" useGeneratedKeys="true" keyProperty="cId">
+        INSERT INTO customer (c_name, c_code, c_address, c_postal_code, c_phone, c_fax, c_contact, c_email, c_status)
+        VALUES (#{cName}, #{cCode}, #{cAddress}, #{cPostalCode}, #{cPhone}, #{cFax}, #{cContact}, #{cEmail}, #{cStatus})
+    </insert>
+    
+    <select id="findById" parameterType="int" resultMap="customerResultMap">
+        SELECT * FROM customer WHERE c_id = #{value}
+    </select>
+    
+    <select id="findAll" parameterType="Customer" resultMap="customerResultMap">
+        SELECT * FROM customer
+        <where>
+            <if test="cName != null and cName != ''">
+                AND c_name LIKE CONCAT('%', #{cName}, '%')
+            </if>
+            <if test="cCode != null and cCode != ''">
+                AND c_code LIKE CONCAT('%', #{cCode}, '%')
+            </if>
+            <if test="cStatus != null and cStatus != ''">
+                AND c_status = #{cStatus}
+            </if>
+        </where>
+        ORDER BY c_id DESC
+    </select>
+    
+    <update id="update" parameterType="Customer">
+        UPDATE customer
+        <set>
+            <if test="cName != null">c_name = #{cName},</if>
+            <if test="cCode != null">c_code = #{cCode},</if>
+            <if test="cAddress != null">c_address = #{cAddress},</if>
+            <if test="cPostalCode != null">c_postal_code = #{cPostalCode},</if>
+            <if test="cPhone != null">c_phone = #{cPhone},</if>
+            <if test="cFax != null">c_fax = #{cFax},</if>
+            <if test="cContact != null">c_contact = #{cContact},</if>
+            <if test="cEmail != null">c_email = #{cEmail},</if>
+            <if test="cStatus != null">c_status = #{cStatus},</if>
+        </set>
+        WHERE c_id = #{cId}
+    </update>
+    
+    <delete id="delete" parameterType="int">
+        DELETE FROM customer WHERE c_id = #{value}
+    </delete>
+</mapper>
+

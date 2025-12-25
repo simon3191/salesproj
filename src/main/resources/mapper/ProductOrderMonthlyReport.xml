@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhee.fanmaisystem.dao.ProductOrderMonthlyReportDao">
+    <resultMap id="reportResultMap" type="ProductOrderMonthlyReport">
+        <result property="reportMonth" column="report_month"/>
+        <result property="pId" column="p_id"/>
+        <result property="pName" column="p_name"/>
+        <result property="pCode" column="p_code"/>
+        <result property="pCategory" column="p_category"/>
+        <result property="pUnit" column="p_unit"/>
+        <result property="orderCount" column="order_count"/>
+        <result property="totalQuantity" column="total_quantity"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="avgPrice" column="avg_price"/>
+        <result property="customerCount" column="customer_count"/>
+    </resultMap>
+    
+    <select id="generateReport" parameterType="string" resultMap="reportResultMap">
+        SELECT 
+            #{month} as report_month,
+            p.p_id,
+            p.p_name,
+            p.p_code,
+            p.p_category,
+            p.p_unit,
+            COUNT(DISTINCT so.so_id) as order_count,
+            COALESCE(SUM(so.quantity), 0) as total_quantity,
+            COALESCE(SUM(so.total_amount), 0) as total_amount,
+            COALESCE(AVG(so.unit_price), 0) as avg_price,
+            COUNT(DISTINCT so.c_id) as customer_count
+        FROM product p
+        LEFT JOIN sales_order so ON p.p_id = so.p_id 
+            AND DATE_FORMAT(so.so_date, '%Y-%m') = #{month}
+        WHERE p.p_status = '在售'
+        GROUP BY p.p_id, p.p_name, p.p_code, p.p_category, p.p_unit
+        HAVING order_count > 0
+        ORDER BY total_amount DESC, p.p_id
+    </select>
+</mapper>
+

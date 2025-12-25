@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商品订单月报</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .search-form {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .search-form input {
+            margin-right: 10px;
+            padding: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            padding: 8px 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>商品订单月报</h1>
+    
+    <div class="search-form">
+        <form action="/report/product/monthly" method="get">
+            <label>打印月份：</label>
+            <input type="month" name="month" th:value="${reportMonth}" required/>
+            <button type="submit">查询</button>
+            <a th:href="@{/report/product/monthly/preview(month=${reportMonth})}" target="_blank">
+                <button type="button">打印预览</button>
+            </a>
+        </form>
+    </div>
+    
+    <table>
+        <tr>
+            <th>商品ID</th>
+            <th>商品名称</th>
+            <th>商品编码</th>
+            <th>类别</th>
+            <th>单位</th>
+            <th>订单数量</th>
+            <th>总销售数量</th>
+            <th>总销售金额</th>
+            <th>平均单价</th>
+            <th>顾客数量</th>
+        </tr>
+        <tr th:each="report : ${reportList}">
+            <td th:text="${report.pId}"></td>
+            <td th:text="${report.pName}"></td>
+            <td th:text="${report.pCode}"></td>
+            <td th:text="${report.pCategory}"></td>
+            <td th:text="${report.pUnit}"></td>
+            <td th:text="${report.orderCount}"></td>
+            <td th:text="${report.totalQuantity}"></td>
+            <td th:text="${'¥' + #numbers.formatDecimal(report.totalAmount, 1, 2)}"></td>
+            <td th:text="${'¥' + #numbers.formatDecimal(report.avgPrice, 1, 2)}"></td>
+            <td th:text="${report.customerCount}"></td>
+        </tr>
+        <tr th:if="${reportList == null || #lists.isEmpty(reportList)}">
+            <td colspan="10" style="text-align: center;">暂无数据</td>
+        </tr>
+    </table>
+</body>
+</html>
+

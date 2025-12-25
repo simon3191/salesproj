@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>库存信息确认</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .search-form {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .search-form input, .search-form select {
+            margin-right: 10px;
+            padding: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .status-不足, .status-缺货 {
+            color: red;
+            font-weight: bold;
+        }
+        .status-充足 {
+            color: green;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>库存信息确认</h1>
+    
+    <div class="search-form">
+        <form action="/stock/info" method="post">
+            <label>商品名称：</label>
+            <input type="text" name="pName" th:value="${stockInfo != null ? stockInfo.pName : ''}"/>
+            
+            <label>商品编码：</label>
+            <input type="text" name="pCode" th:value="${stockInfo != null ? stockInfo.pCode : ''}"/>
+            
+            <label>商品类别：</label>
+            <input type="text" name="pCategory" th:value="${stockInfo != null ? stockInfo.pCategory : ''}"/>
+            
+            <button type="submit">搜索</button>
+            <a href="/stock/lowstock"><button type="button">库存不足预警</button></a>
+        </form>
+    </div>
+    
+    <table>
+        <tr>
+            <th>商品ID</th>
+            <th>商品名称</th>
+            <th>商品编码</th>
+            <th>类别</th>
+            <th>单位</th>
+            <th>当前库存</th>
+            <th>最低库存</th>
+            <th>最高库存</th>
+            <th>库存状态</th>
+            <th>供货商</th>
+        </tr>
+        <tr th:each="stock : ${stockList}">
+            <td th:text="${stock.pId}"></td>
+            <td th:text="${stock.pName}"></td>
+            <td th:text="${stock.pCode}"></td>
+            <td th:text="${stock.pCategory}"></td>
+            <td th:text="${stock.pUnit}"></td>
+            <td th:text="${stock.currentStock}"></td>
+            <td th:text="${stock.minStock}"></td>
+            <td th:text="${stock.maxStock}"></td>
+            <td th:classappend="'status-' + ${stock.stockStatus}" th:text="${stock.stockStatus}"></td>
+            <td th:text="${stock.sName}"></td>
+        </tr>
+        <tr th:if="${stockList == null || #lists.isEmpty(stockList)}">
+            <td colspan="10" style="text-align: center;">暂无数据</td>
+        </tr>
+    </table>
+</body>
+</html>
+
